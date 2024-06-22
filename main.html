@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My GitHub Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        nav {
+            background-color: #444;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to My GitHub Page!</h1>
+    </header>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+    <main>
+        <section id="home">
+            <h2>Home</h2>
+            <p>This is the home section of my GitHub Page.</p>
+            <button class="button" onclick="getTwitchOAuth()">Get Twitch OAuth Token</button>
+            <p id="oauthToken"></p>
+        </section>
+        <section id="about">
+            <h2>About</h2>
+            <p>This section is about me and my interests.</p>
+        </section>
+        <section id="contact">
+            <h2>Contact</h2>
+            <p>You can contact me via email: your-email@example.com</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Your Name</p>
+    </footer>
+
+    <script>
+        function getTwitchOAuth() {
+            // Replace with your Twitch Client ID and Redirect URI
+            const clientId = 'p1r6syp6di8n6iyvxvw7gqx4k1oafc';
+            const redirectUri = 'https://your-app-name.github.io/callback'; // Replace with your external redirect URI
+            const scopes = 'chat:read chat:edit';
+
+            // Build the authorization URL
+            const authParams = {
+                client_id: clientId,
+                redirect_uri: redirectUri,
+                response_type: 'token',
+                scope: scopes
+            };
+
+            const authUrl = `https://id.twitch.tv/oauth2/authorize?${new URLSearchParams(authParams)}`;
+
+            // Open the authorization URL in a new tab
+            window.open(authUrl, '_blank');
+        }
+
+        // Function to handle the callback and display the access token
+        function handleTwitchOAuthResponse() {
+            // Parse the URL parameters to extract the access token
+            const urlParams = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = urlParams.get('access_token');
+
+            // Display the access token on the page
+            const tokenElement = document.getElementById('oauthToken');
+            tokenElement.textContent = `Twitch OAuth Token: ${accessToken}`;
+        }
+
+        // Check if there is a hash in the URL (callback from Twitch)
+        if (window.location.hash) {
+            handleTwitchOAuthResponse();
+        }
+    </script>
+</body>
+</html>
