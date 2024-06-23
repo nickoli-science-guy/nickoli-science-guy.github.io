@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NgbatzBot</title>
+    <title>Twitch OAuth Callback</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-    <h1>Display Twitch OAuth Token</h1>
+    <h1>Twitch OAuth Callback</h1>
     <div id="tokenDisplay"></div>
 
     <script>
@@ -30,21 +30,55 @@
 
             // Check if 'code' parameter exists
             if (urlParams.has('code')) {
-                // Extract access token and other relevant parameters
-                const accessToken = urlParams.get('code');
-                const scope = urlParams.get('scope');
+                const code = urlParams.get('code');
 
-                // Display the access token on the page
-                const tokenDisplay = document.getElementById('tokenDisplay');
-                tokenDisplay.textContent = `Twitch OAuth Token: ${accessToken}`;
-                tokenDisplay.innerHTML += `<br>Scope: ${scope}`;
-
-                // Optionally, you can perform further actions with the token here
+                // Exchange code for access token using Fetch API
+                fetchAccessToken(code);
             } else {
-                // Handle case when 'code' parameter is not found
                 const tokenDisplay = document.getElementById('tokenDisplay');
                 tokenDisplay.textContent = 'Error: Twitch OAuth code not found in URL.';
             }
+        }
+
+        // Function to fetch access token from Twitch
+        function fetchAccessToken(code) {
+            const clientId = 'your-client-id'; // Replace with your Twitch application client ID
+            const clientSecret = 'your-client-secret'; // Replace with your Twitch application client secret
+            const redirectUri = 'https://your-website-url/callback'; // Update with your actual redirect URI
+            const tokenUrl = `https://id.twitch.tv/oauth2/token`;
+
+            // Token request parameters
+            const params = {
+                client_id: clientId,
+                client_secret: clientSecret,
+                code: code,
+                grant_type: 'authorization_code',
+                redirect_uri: redirectUri
+            };
+
+            // Fetch request to exchange code for access token
+            fetch(tokenUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(params)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    const tokenDisplay = document.getElementById('tokenDisplay');
+                    tokenDisplay.textContent = `Twitch OAuth Token: ${data.access_token}`;
+                    // Optionally, you can use the token for further interactions with Twitch here
+                } else {
+                    console.error('Error:', data.error);
+                    alert('Failed to retrieve access token');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while retrieving access token');
+            });
         }
 
         // Call the function to extract and display the access token on page load
